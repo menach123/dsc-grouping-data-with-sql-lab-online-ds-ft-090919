@@ -49,6 +49,10 @@ Import sqlite3 and pandas. Then, connect to the database and instantiate a curso
 
 ```python
 #Your code here
+import sqlite3
+import pandas as pd
+conn = sqlite3.Connection('babe_ruth.db')
+cur = conn.cursor()
 ```
 
 ## Total Seasons
@@ -57,7 +61,18 @@ Return the total number of years that Babe Ruth played professional baseball.
 
 ```python
 #Your code here
+
+cur.execute("""SELECT  COUNT(year) 
+               FROM babe_ruth_stats""").fetchall()
+
 ```
+
+
+
+
+    [(22,)]
+
+
 
 ## Seasons with NY
 Return the total number of years Babe Ruth played with the NY Yankees.
@@ -65,7 +80,15 @@ Return the total number of years Babe Ruth played with the NY Yankees.
 
 ```python
 #Your code here
+cur.execute("""select count(year) from babe_ruth_stats where team is 'NY'""").fetchall()
 ```
+
+
+
+
+    [(15,)]
+
+
 
 ## Most HR
 Select the row with the most HR that Babe Ruth hit in one season
@@ -73,7 +96,15 @@ Select the row with the most HR that Babe Ruth hit in one season
 
 ```python
 #Your code here
+cur.execute("""select Max(HR) from babe_ruth_stats""").fetchall()
 ```
+
+
+
+
+    [(60,)]
+
+
 
 ## Least HR
 Select the row with the least number of HR hit in one season.
@@ -81,7 +112,15 @@ Select the row with the least number of HR hit in one season.
 
 ```python
 #Your code here
+cur.execute("""select min(HR) from babe_ruth_stats""").fetchall()
 ```
+
+
+
+
+    [(0,)]
+
+
 
 ## Total HR
 Return the total number of `HR` hit by Babe Ruth during his career
@@ -89,7 +128,15 @@ Return the total number of `HR` hit by Babe Ruth during his career
 
 ```python
 #Your code here
+cur.execute("""select sum(HR) from babe_ruth_stats""").fetchall()
 ```
+
+
+
+
+    [(714,)]
+
+
 
 ##  Five Worst HR Seasons With at Least 100 Games Played
 Above you saw that Babe Ruth hit 0 home runs in his first year when he played only five games.  To avoid this and other extreme  outliers, first filter the data to those years in which Ruth played in at least 100 games. Then, select all of the columns for the 5 worst seasons, in terms of the number of home runs, where he played over 100 games.
@@ -97,7 +144,15 @@ Above you saw that Babe Ruth hit 0 home runs in his first year when he played on
 
 ```python
 #Your code here
+cur.execute("""select year, hr  from babe_ruth_stats where games >= 100 order by hr limit 5""").fetchall()
 ```
+
+
+
+
+    [(1934, 22), (1919, 29), (1933, 34), (1922, 35), (1923, 41)]
+
+
 
 ## Average Batting Average
 Select the average, `AVG`, of Ruth's batting averages.  The header of the result would be `AVG(AVG)` which is quite confusing, so provide an alias of `career_average`.
@@ -105,7 +160,15 @@ Select the average, `AVG`, of Ruth's batting averages.  The header of the result
 
 ```python
 #Your code here
+cur.execute("""select avg(AVG) as career_average from babe_ruth_stats """).fetchall()
 ```
+
+
+
+
+    [(0.3228636363636364,)]
+
+
 
 ## Total Years and Hits Per Team
 Select the total number of years played (AS num_years) and total hits (AS total_hits) Babe Ruth had for each team he played for.
@@ -113,7 +176,15 @@ Select the total number of years played (AS num_years) and total hits (AS total_
 
 ```python
 #Your code here
+cur.execute("""select team, count(year) as num_years,sum(hits) as total_hits from babe_ruth_stats group by team""").fetchall()
 ```
+
+
+
+
+    [('BOS', 7, 355), ('NY', 15, 2518)]
+
+
 
 ## Number of Years with Over 300 Times On Base
 We want to know the years in which Ruth successfully reached base over 300 times.  We need to add `hits` and `BB` to calculate how many times Ruth reached base.  Simply add the two columns together (ie: `SELECT [columnName] + [columnName] AS ...`) and give this value an alias of `on_base`.  Select the `year` and `on_base` for only those years with an `on_base` over 300.  
@@ -121,7 +192,23 @@ We want to know the years in which Ruth successfully reached base over 300 times
 
 ```python
 #Your code here
+cur.execute("""select year, sum(BB) + sum(hits) as total_hits from babe_ruth_stats group by year having total_hits > 300 """).fetchall()
 ```
+
+
+
+
+    [(1920, 322),
+     (1921, 349),
+     (1923, 375),
+     (1924, 342),
+     (1926, 328),
+     (1927, 329),
+     (1928, 310),
+     (1930, 322),
+     (1931, 327)]
+
+
 
 ## Summary
 
